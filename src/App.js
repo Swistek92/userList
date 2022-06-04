@@ -1,23 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
+import AddUser from './components/User/AddUser';
+import UserList from './components/User/UserList';
 
+const getLocalItems = () => {
+  let list = JSON.parse(localStorage.getItem('usersList'));
+  console.log(list);
+  if (list) {
+    return list;
+  } else {
+    return [];
+  }
+};
 function App() {
+  const [usersList, setUserList] = useState(getLocalItems());
+
+  useEffect(() => {
+    localStorage.setItem('usersList', JSON.stringify(usersList));
+  }, [usersList]);
+
+  const addUserHanlder = (userName, userAge) => {
+    setUserList((prevUserList) => {
+      return [
+        ...prevUserList,
+        { name: userName, age: userAge, id: Math.random().toString() },
+      ];
+    });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <AddUser onAddUser={addUserHanlder} />
+      <UserList users={usersList} />
     </div>
   );
 }
